@@ -14,13 +14,27 @@ public class GameManager : Singleton<GameManager>
         LOSE
     }
 
-    public StateMachine<GameStates> stateMachine;
+    public enum CharacterAnimationState
+    {
+        IDLE,
+        WALK,
+        JUMP
+    }
 
+    public StateMachine<GameStates> stateMachine;
+    public StateMachine<CharacterAnimationState> characterAnimationState;
     public void Init()
     {
         stateMachine = new StateMachine<GameStates>();
         stateMachine.Init();
         stateMachine.RegisterStates(GameStates.INTRO,new StateBase());
         
+    }
+
+    public void InitAnimations()
+    {
+        characterAnimationState = new StateMachine<CharacterAnimationState>();
+        characterAnimationState.Init();
+        characterAnimationState.RegisterStates(CharacterAnimationState.IDLE,new StateBase());
     }
 }
