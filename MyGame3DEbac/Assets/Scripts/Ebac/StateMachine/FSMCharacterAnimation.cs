@@ -14,8 +14,9 @@ public class FSMCharacterAnimation : MonoBehaviour
 
     public Transform groundCheck;
     public Rigidbody rb;
-    public float speedHorizontal;
-    public float speedVertical;
+    public float speed;
+    public float deceleration = 5f;
+    public bool isWalkingRight;
 
     public enum AnimationState
     {
@@ -54,23 +55,62 @@ public class FSMCharacterAnimation : MonoBehaviour
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(moveX * speedHorizontal,0,moveZ * speedVertical);
+        Vector3 movement = new Vector3(moveX,0,moveZ) * speed;
+        
+        //Decelaration
+        Vector3 velocity = rb.velocity;
+        Vector3 velocityChange = movement - new Vector3(velocity.x, 0, velocity.z);
+        velocityChange.y = 0;
 
-        rb.AddForce(movement);
+        if(movement.x >0 || movement.x<0)
+        {
+            isWalkingRight = true;
+            animationStateMachine.SwitchState(AnimationState.STRAFE);
+            rb.AddForce(velocityChange, ForceMode.Acceleration);
 
-        if (movement.z > 0)
+        }else if (movement.x == 0)
+        {
+            isWalkingRight = false;
+        }
+
+        if(movement.z > 0.1f)
+        {
+            rb.AddForce(velocityChange,ForceMode.Acceleration);
+            animationStateMachine.SwitchState(AnimationState.WALK);
+
+        }else if (movement.z < 0)
         {
             animationStateMachine.SwitchState(AnimationState.WALK);
         }
-        else if(movement.z == 0)
+        else if(movement.z == 0 && !isWalkingRight)
         {
+            
             animationStateMachine.SwitchState(AnimationState.IDLE);
+            rb.velocity = new Vector3(Mathf.Lerp(velocity.x, 0, Time.deltaTime * deceleration),
+                velocity.y,
+                Mathf.Lerp(velocity.z, 0, Time.deltaTime * deceleration));
         }
 
-        if(movement.x > 0 || movement.x < 0)
-        {
-            animationStateMachine.SwitchState(AnimationState.STRAFE);
-        }
+
+
+
+
+        //rb.AddForce(movement);
+
+        //if (movement.z > 0)
+        //{
+
+        //    animationStateMachine.SwitchState(AnimationState.WALK);
+        //}
+        //else if(movement.z == 0)
+        //{
+        //    animationStateMachine.SwitchState(AnimationState.IDLE);
+        //}
+
+        //if(movement.x > 0 || movement.x < 0)
+        //{
+        //    animationStateMachine.SwitchState(AnimationState.STRAFE);
+        //}
 
     }
 

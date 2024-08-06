@@ -578,8 +578,9 @@ MonoBehaviour:
   jumpForce: 5
   groundCheck: {fileID: 1727037486}
   rb: {fileID: 626417439}
-  speedHorizontal: 3
-  speedVertical: 1.5
+  speedHorizontal: 10
+  speedVertical: 5
+  deceleration: 5
 --- !u!4 &1210049329
 Transform:
   m_ObjectHideFlags: 0
