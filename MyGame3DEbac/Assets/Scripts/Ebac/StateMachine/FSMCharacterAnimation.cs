@@ -17,7 +17,7 @@ public class FSMCharacterAnimation : MonoBehaviour
     public float speed;
     public float deceleration = 5f;
     public bool isWalkingRight;
-
+    public bool isJumping;
     public enum AnimationState
     {
         IDLE,
@@ -84,7 +84,7 @@ public class FSMCharacterAnimation : MonoBehaviour
             animationStateMachine.SwitchState(AnimationState.BACKWARD);
             rb.AddForce(velocityChange, ForceMode.Acceleration);
         }
-        else if(movement.z == 0 && !isWalkingRight)
+        else if(movement.z == 0 && !isWalkingRight && !isJumping)
         {
             
             animationStateMachine.SwitchState(AnimationState.IDLE);
@@ -98,7 +98,7 @@ public class FSMCharacterAnimation : MonoBehaviour
     private void Jump()
     {
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isWalkingRight)
         {
             
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
@@ -111,8 +111,11 @@ public class FSMCharacterAnimation : MonoBehaviour
     IEnumerator PlayJump()
     {
         animationStateMachine.SwitchState(AnimationState.JUMP);
+        isJumping = true;
         yield return new WaitForSeconds(1.9f);
         animationStateMachine.SwitchState(AnimationState.IDLE);
+        isJumping = false;
+        StopCoroutine(PlayJump());
     }
    
 }
