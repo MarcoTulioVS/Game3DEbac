@@ -18,7 +18,9 @@ public class GameManager : Singleton<GameManager>
     {
         IDLE,
         WALK,
-        JUMP
+        JUMP,
+        STRAFE,
+        BACKWARD
     }
 
     public StateMachine<GameStates> stateMachine;

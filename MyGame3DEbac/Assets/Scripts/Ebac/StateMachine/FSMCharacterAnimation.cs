@@ -14,13 +14,16 @@ public class FSMCharacterAnimation : MonoBehaviour
 
     public Transform groundCheck;
     public Rigidbody rb;
-
+    public float speedHorizontal;
+    public float speedVertical;
 
     public enum AnimationState
     {
         IDLE,
         WALK,
-        JUMP
+        JUMP,
+        STRAFE,
+        BACKWARD
     }
 
     public StateMachine<AnimationState> animationStateMachine;
@@ -33,6 +36,7 @@ public class FSMCharacterAnimation : MonoBehaviour
         animationStateMachine.RegisterStates(AnimationState.IDLE, new GMStateIdle(animator));
         animationStateMachine.RegisterStates(AnimationState.WALK, new GMStateWalk(animator));
         animationStateMachine.RegisterStates(AnimationState.JUMP, new GMStateJump(animator));
+        animationStateMachine.RegisterStates(AnimationState.STRAFE, new GMStateStrafe(animator));
 
     }
 
@@ -47,16 +51,26 @@ public class FSMCharacterAnimation : MonoBehaviour
 
     private void Move()
     {
-        if (Input.GetKey(KeyCode.W))
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+
+        Vector3 movement = new Vector3(moveX * speedHorizontal,0,moveZ * speedVertical);
+
+        rb.AddForce(movement);
+
+        if (movement.z > 0)
         {
             animationStateMachine.SwitchState(AnimationState.WALK);
         }
-        else if (Input.GetKeyUp(KeyCode.W))
+        else if(movement.z == 0)
         {
-
             animationStateMachine.SwitchState(AnimationState.IDLE);
         }
 
+        if(movement.x > 0 || movement.x < 0)
+        {
+            animationStateMachine.SwitchState(AnimationState.STRAFE);
+        }
 
     }
 
@@ -65,7 +79,7 @@ public class FSMCharacterAnimation : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            Debug.Log("T");
+            
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             StartCoroutine("PlayJump");
             
