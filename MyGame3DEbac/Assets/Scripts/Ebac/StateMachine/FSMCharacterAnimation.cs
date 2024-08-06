@@ -38,6 +38,7 @@ public class FSMCharacterAnimation : MonoBehaviour
         animationStateMachine.RegisterStates(AnimationState.WALK, new GMStateWalk(animator));
         animationStateMachine.RegisterStates(AnimationState.JUMP, new GMStateJump(animator));
         animationStateMachine.RegisterStates(AnimationState.STRAFE, new GMStateStrafe(animator));
+        animationStateMachine.RegisterStates(AnimationState.BACKWARD, new GMStateBackward(animator));
 
     }
 
@@ -78,9 +79,10 @@ public class FSMCharacterAnimation : MonoBehaviour
             rb.AddForce(velocityChange,ForceMode.Acceleration);
             animationStateMachine.SwitchState(AnimationState.WALK);
 
-        }else if (movement.z < 0)
+        }else if (movement.z < 0 && !isWalkingRight)
         {
-            animationStateMachine.SwitchState(AnimationState.WALK);
+            animationStateMachine.SwitchState(AnimationState.BACKWARD);
+            rb.AddForce(velocityChange, ForceMode.Acceleration);
         }
         else if(movement.z == 0 && !isWalkingRight)
         {
@@ -90,27 +92,6 @@ public class FSMCharacterAnimation : MonoBehaviour
                 velocity.y,
                 Mathf.Lerp(velocity.z, 0, Time.deltaTime * deceleration));
         }
-
-
-
-
-
-        //rb.AddForce(movement);
-
-        //if (movement.z > 0)
-        //{
-
-        //    animationStateMachine.SwitchState(AnimationState.WALK);
-        //}
-        //else if(movement.z == 0)
-        //{
-        //    animationStateMachine.SwitchState(AnimationState.IDLE);
-        //}
-
-        //if(movement.x > 0 || movement.x < 0)
-        //{
-        //    animationStateMachine.SwitchState(AnimationState.STRAFE);
-        //}
 
     }
 
